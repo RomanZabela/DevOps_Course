@@ -5,13 +5,13 @@ function App() {
     const [text, setText] = useState("");
 
     useEffect(() => {
-        fetch(`/api/notes`)
+        fetch('/api/notes')
             .then(res => res.json())
             .then(data => setNotes(data));
     }, []);
 
     const addNote = () => {
-        fetch(`/api/notes`, {
+        fetch('/api/notes', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ text })

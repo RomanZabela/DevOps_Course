@@ -21,19 +21,19 @@ jobs:
 
     - name: Build Backend Docker Image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest ./backend
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest ./backend
 
     - name: Build Frontend Docker Image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-frontend:latest ./frontend
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest ./frontend
 
     - name: Push Backend Image
       run: |
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
     - name: Push Frontend Image
       run: |
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/devops-frontend:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
     - name: Deploy to Server via SSH
       uses: appleboy/ssh-action@v1.0.3
@@ -46,18 +46,18 @@ jobs:
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
           # Stop and remove old containers if exist
-          docker stop devops-backend || true
-          docker rm devops-backend || true
-          docker stop devops-frontend || true
-          docker rm devops-frontend || true
+          docker stop backend || true
+          docker rm backend || true
+          docker stop frontend || true
+          docker rm frontend || true
 
           # Pull latest images
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/devops-frontend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
           # Run backend container
-          docker run -d --name devops-backend --network devops-network -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest
+          docker run -d --name backend --network devops-network -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
           # Run frontend container
-          docker run -d --name devops-frontend --network devops-network -p 3000:80 ${{ secrets.DOCKERHUB_USERNAME }}/devops-frontend:latest
+          docker run -d --name frontend --network devops-network -p 3000:80 ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
